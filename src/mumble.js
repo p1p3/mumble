@@ -41,7 +41,7 @@ const tracking$ = tcp.createTCPServer({ port: mumbleConfig.tracking.port }).pipe
 combineLatest([trackingRepo$, tracking$])
   .pipe(
     sampleTime(100),
-    switchMap(([trackingRepo, tracking]) => trackingRepo.add(tracking)),
+    switchMap(([trackingRepo, tracking]) => from(trackingRepo.add(tracking))),
     catchError((error) => {
       console.error('error storing tracking', error);
       return of({});
@@ -76,7 +76,7 @@ const potential$ = tcp.createTCPServer({ port: mumbleConfig.potential.port }).pi
 combineLatest([potentialRepo$, potential$])
   .pipe(
     sampleTime(100),
-    switchMap(([potentialRepo, potential]) => potentialRepo.add(potential)),
+    switchMap(([potentialRepo, potential]) => from(potentialRepo.add(potential))),
     catchError((error) => {
       console.error('error storing potential', error);
       return of({});
