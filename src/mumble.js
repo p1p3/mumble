@@ -15,6 +15,7 @@ const tcp = require('./tcp_server.js');
 const trackingRepository = require('./tracking.repository.js');
 const potentialRepository = require('./potential.repository.js');
 
+const startTime = Date.now();
 // tracking, but we don't want to send any messages yet
 
 const trackingRepo$ = from(trackingRepository.create(mumbleConfig.couchDb.url));
@@ -23,7 +24,7 @@ const tracking$ = tcp.createTCPServer({ port: mumbleConfig.tracking.port }).pipe
   map((data) => JSON.parse(data[0])),
   filter((data) => !!data),
   map(({ src, timeStamp }) => ({
-    timeStamp,
+    timeStamp: timeStamp + startTime,
     mics: src.map((mic) => ({
       x: mic.x,
       y: mic.y,
@@ -58,7 +59,7 @@ const potential$ = tcp.createTCPServer({ port: mumbleConfig.potential.port }).pi
   map((data) => JSON.parse(data[0])),
   filter((data) => !!data),
   map(({ timeStamp, src }) => ({
-    timeStamp,
+    timeStamp: timeStamp + startTime,
     mics: src.map((mic) => ({
       x: mic.x,
       y: mic.y,
@@ -76,7 +77,9 @@ const potential$ = tcp.createTCPServer({ port: mumbleConfig.potential.port }).pi
 combineLatest([potentialRepo$, potential$])
   .pipe(
     // sampleTime(100),
-    switchMap(([potentialRepo, potential]) => from(potentialRepo.add(potential, potential.timeStamp))),
+    switchMap(([potentialRepo, potential]) =>
+      from(potentialRepo.add(potential, potential.timeStamp))
+    ),
     catchError((error) => {
       console.error('error storing potential', error);
       return of({});
