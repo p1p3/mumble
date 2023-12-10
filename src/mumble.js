@@ -1,15 +1,17 @@
 const { mumbleConfig } = require('../config/mumble.js');
 const tcp = require('./tcp_server.js');
+const { sampleTime } = require('rxjs');
 // const trackingRepository = require('./tracking.repository.js');
 
 (async () => {
   try {
     // tracking, but we don't want to send any messages yet
-    const tracking = await tcp.createTCPServer({ port: mumbleConfig.tracking.port });
+    const tracking$ = await tcp.createTCPServer({ port: mumbleConfig.tracking.port });
     // const repo = await trackingRepository.create(mumbleConfig.couchDb.url);
-    tracking.data$.subscribe((data) => console.log('data received tracking', data));
-    tracking.close$.subscribe(() => console.log('tracking connection closed'));
-    tracking.error$.subscribe((error) => console.error('tracking connection error', error));
+
+    tracking$
+      .pipe(sampleTime(500))
+      .subscribe((data) => console.log('data received tracking', data));
 
     // potential
     // const potential = tcp.createTCPServer({
