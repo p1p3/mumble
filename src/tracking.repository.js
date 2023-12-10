@@ -6,7 +6,7 @@ const getTrackingTable = async (couchServerUl) => {
   const dbs = await nanoServer.db.list();
 
   if (!dbs.includes(tableName)) {
-    nanoServer.db.create(tableName);
+    await nanoServer.db.create(tableName);
   }
 
   return nanoServer.db.use(tableName);
