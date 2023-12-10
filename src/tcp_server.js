@@ -30,7 +30,7 @@ exports.createTCPServer = ({ port }) => {
         }
       });
 
-      conn.on('close', () => console.log('Connection close'));
+      conn.on('close', (info) => console.log('Connection close', info));
       conn.on('error', (error) => console.error('Connection error', error));
     }
 
