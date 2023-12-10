@@ -5,19 +5,19 @@ const tcp = require('./tcp_server.js');
 (async () => {
   try {
     // tracking, but we don't want to send any messages yet
-    const tracking = tcp.createTCPServer({ onData: (data) => console.log('data received tracking', data) });
+    const tracking = await tcp.createTCPServer({ port: mumbleConfig.tracking.port });
     // const repo = await trackingRepository.create(mumbleConfig.couchDb.url);
-
-    // tracking
-    tracking.listen(mumbleConfig.tracking.port, () => {
-      console.log('server listening to %j', tracking.address());
-    });
+    tracking.data$.subscribe((data) => console.log('data received tracking', data));
+    tracking.close$.subscribe(() => console.log('tracking connection closed'));
+    tracking.error$.subscribe((error) => console.error('tracking connection error', error));
 
     // potential
-    const potential = tcp.createTCPServer({ onData: (data) => console.log('data received potential', data) });
-    potential.listen(mumbleConfig.potential.port, (x) => {
-      console.log('server listening to %j', x, potential.address());
-    });
+    // const potential = tcp.createTCPServer({
+    //   onData: (data) => console.log('data received potential', data),
+    // });
+    // potential.listen(mumbleConfig.potential.port, (x) => {
+    //   console.log('server listening to %j', x, potential.address());
+    // });
   } catch (e) {
     // Deal with the fact the chain failed
   }

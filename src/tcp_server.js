@@ -1,3 +1,4 @@
+const { map, bindCallback, sampleTime } = require('rxjs');
 const { StringDecoder } = require('string_decoder');
 const net = require('net');
 
@@ -10,53 +11,41 @@ const boundaryMarker = '}####{';
 const marker = '####';
 const splitJson = (stream) => stream.replace(boundary, boundaryMarker).split(marker);
 
-exports.createTCPServer = ({ onData }) => {
+exports.createTCPServer = ({ port }) => {
   function handleConnection(conn) {
     const remoteAddress = `${conn.remoteAddress}:${conn.remotePort}`;
     console.log('new client connection from %s', remoteAddress);
 
-    function onConnData(d) {
-      const decoder = new StringDecoder();
+    const onDataAsObservable = bindCallback((cb) => conn.on('data', cb));
+    const data$ = onDataAsObservable().pipe(
+      sampleTime(500),
+      map((d) => {
+        const decoder = new StringDecoder();
 
-      // Decode received string
-      const stream = decoder.write(d);
+        // Decode received string
+        const stream = decoder.write(d);
+        return splitJson(stream);
+      }),
+    );
 
-      /*
-          {
-          "timeStamp": 26,
-            "src": [
-              { "id": 0, "tag": "", "x": 0.000, "y": 0.000, "z": 0.000, "activity": 0.000 },
-              { "id": 0, "tag": "", "x": 0.000, "y": 0.000, "z": 0.000, "activity": 0.000 },
-              { "id": 0, "tag": "", "x": 0.000, "y": 0.000, "z": 0.000, "activity": 0.000 },
-              { "id": 0, "tag": "", "x": 0.000, "y": 0.000, "z": 0.000, "activity": 0.000 }
-            ]
-          }
-      */
-      const receivedData = splitJson(stream);
-      for (const data of receivedData) {
-        try {
-          onData(data);
-        } catch (error) {
-          console.error('Error sending data: %s', error);
-        }
-      }
-    }
+    const onCloseAsObservable = bindCallback((cb) => conn.on('close', cb));
+    const close$ = onCloseAsObservable();
 
-    function onConnClose() {
-      console.log('connection from %s closed', remoteAddress);
-    }
+    const onErrorObservable = bindCallback((cb) => conn.on('error', cb));
+    const error$ = onErrorObservable();
 
-    function onConnError(err) {
-      console.log('Connection %s error: %s', remoteAddress, err.message);
-    }
-
-    conn.on('data', onConnData);
-    conn.once('close', onConnClose);
-    conn.on('error', onConnError);
+    return { data$, close$, error$ };
   }
 
   const server = net.createServer();
-  server.on('connection', handleConnection);
 
-  return server;
+  return new Promise((resolve) => {
+    server.on('connection', (connection) => {
+      resolve(handleConnection(connection));
+    });
+
+    server.listen(port, () => {
+      console.log('server listening to %j', server.address());
+    });
+  });
 };
