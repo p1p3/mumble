@@ -7,7 +7,7 @@ const tcp = require('./tcp_server.js');
   try {
     // tracking, but we don't want to send any messages yet
     const tracking$ = tcp.createTCPServer({ port: mumbleConfig.tracking.port }).pipe(
-      sampleTime(100),
+      sampleTime(500),
       tap((x) => console.log('tracking', x)),
       map((data) => data[0]),
       filter((data) => !!data),
@@ -24,7 +24,7 @@ const tcp = require('./tcp_server.js');
     // {timeStamp : 4572, src: {id: 0, tag: "", x: 0.000, y: 0.000, z: 0.000, activity: 0.000}}
 
     const potential$ = tcp.createTCPServer({ port: mumbleConfig.potential.port }).pipe(
-      sampleTime(100),
+      sampleTime(500),
       tap((x) => console.log('potential', x)),
       map((data) => data[0]),
       filter((data) => !!data),
@@ -39,7 +39,7 @@ const tcp = require('./tcp_server.js');
 
     // {timeStamp : 4572, src: { "x": 0.260, "y": 0.084, "z": 0.962, "E": 0.235 }}
     zip(tracking$, potential$)
-      // .pipe(sampleTime(100))
+      .pipe(sampleTime(500))
       .subscribe(([tracking, potential]) => console.log('data received ', tracking, potential));
   } catch (e) {
     // Deal with the fact the chain failed
