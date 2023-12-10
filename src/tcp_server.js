@@ -10,7 +10,7 @@ const boundaryMarker = '}####{';
 const marker = '####';
 const splitJson = (stream) => stream.replace(boundary, boundaryMarker).split(marker);
 
-exports.createTCPServer = (port, clients) => {
+exports.createTCPServer = ({ onData }) => {
   function handleConnection(conn) {
     const remoteAddress = `${conn.remoteAddress}:${conn.remotePort}`;
     console.log('new client connection from %s', remoteAddress);
@@ -20,10 +20,14 @@ exports.createTCPServer = (port, clients) => {
 
       // Decode received string
       const stream = decoder.write(d);
-      try {
-        splitJson(stream).forEach((str) => clients.forEach((client) => client.send(str)));
-      } catch (err) {
-        console.log('Error sending data: %s', err);
+
+      const receivedData = splitJson(stream);
+      for (const data of receivedData) {
+        try {
+          onData(data);
+        } catch (error) {
+          console.error('Error sending data: %s', error);
+        }
       }
     }
 
