@@ -9,6 +9,6 @@ module.exports.mumbleConfig = {
     port: 8080,
   },
   couchDb: {
-    url: 'http://localhost:5984',
+    url: 'http://test:test@localhost:5984',
   },
 };
