@@ -46,7 +46,7 @@ const potential$ = tcp.createTCPServer({ port: mumbleConfig.potential.port }).pi
 // {timeStamp : 4572, src: { "x": 0.260, "y": 0.084, "z": 0.962, "E": 0.235 }}
 zip(tracking$, potential$)
   .pipe(
-    // sampleTime(100),
+    sampleTime(50),
     catchError((error) => {
       console.error('error', error);
       return of([]);
