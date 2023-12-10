@@ -1,6 +1,6 @@
+const { sampleTime } = require('rxjs');
 const { mumbleConfig } = require('../config/mumble.js');
 const tcp = require('./tcp_server.js');
-const { sampleTime } = require('rxjs');
 // const trackingRepository = require('./tracking.repository.js');
 
 (async () => {

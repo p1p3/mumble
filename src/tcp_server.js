@@ -14,20 +14,20 @@ const splitJson = (stream) => stream.replace(boundary, boundaryMarker).split(mar
 exports.createTCPServer = ({ port }) => {
   const server = net.createServer();
 
-  server.listen(port, () => {
-    console.log('server listening to %j', server.address());
-  });
-
-  return new Observable((subscriber) => {
+  const data$ = new Observable((subscriber) => {
     function handleConnection(conn) {
       const remoteAddress = `${conn.remoteAddress}:${conn.remotePort}`;
       console.log('new client connection from %s', remoteAddress);
 
       conn.on('data', (data) => {
-        const decoder = new StringDecoder();
+        try {
+          const decoder = new StringDecoder();
 
-        const stream = decoder.write(data);
-        subscriber.next(splitJson(stream));
+          const stream = decoder.write(data);
+          subscriber.next(splitJson(stream));
+        } catch (error) {
+          console.error('Error mapping data', error);
+        }
       });
 
       conn.on('close', () => console.log('Connection close'));
@@ -36,4 +36,10 @@ exports.createTCPServer = ({ port }) => {
 
     server.on('connection', handleConnection);
   });
+
+  server.listen(port, () => {
+    console.log('server listening to %j', server.address());
+  });
+
+  return data$;
 };
