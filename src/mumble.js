@@ -1,4 +1,4 @@
-const { sampleTime, map, filter, zip } = require('rxjs');
+const { sampleTime, map, filter, zip, tap } = require('rxjs');
 const { mumbleConfig } = require('../config/mumble.js');
 const tcp = require('./tcp_server.js');
 // const trackingRepository = require('./tracking.repository.js');
@@ -17,6 +17,7 @@ const tcp = require('./tcp_server.js');
         z: src.z,
         activity: src.activity,
       })),
+      tap((x) => console.log('tracking', x)),
     );
     // const repo = await trackingRepository.create(mumbleConfig.couchDb.url);
 
@@ -33,6 +34,7 @@ const tcp = require('./tcp_server.js');
         z: src.z,
         error: src.E,
       })),
+      tap((x) => console.log('potential', x)),
     );
 
     // {timeStamp : 4572, src: { "x": 0.260, "y": 0.084, "z": 0.962, "E": 0.235 }}
