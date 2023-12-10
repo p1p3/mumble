@@ -15,7 +15,7 @@ const getPotentialTable = async (couchServerUl) => {
 exports.create = async (couchServerUl) => {
   const trackingTable = await getPotentialTable(couchServerUl);
 
-  const add = async (record, id) => trackingTable.insert(record, id);
+  const add = async (record, id) => trackingTable.insert({ ...record, _id: id });
 
   return { add };
 };
