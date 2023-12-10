@@ -31,7 +31,7 @@ const tracking$ = tcp.createTCPServer({ port: mumbleConfig.tracking.port }).pipe
 const potential$ = tcp.createTCPServer({ port: mumbleConfig.potential.port }).pipe(
   sampleTime(500),
   tap((x) => console.log('potential after', x)),
-  map((data) => data[0]),
+  map((data) => JSON.parse(data[0])),
   filter((data) => !!data),
   tap((x) => console.log('potential before', x)),
   map(({ timeStamp, src }) => ({
