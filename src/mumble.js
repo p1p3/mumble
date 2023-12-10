@@ -7,7 +7,7 @@ const tcp = require('./tcp_server.js');
 const tracking$ = tcp.createTCPServer({ port: mumbleConfig.tracking.port }).pipe(
   sampleTime(500),
   tap((x) => console.log('tracking before', x)),
-  map((data) => data[0]),
+  map((data) => JSON.parse(data[0])),
   filter((data) => !!data),
   tap((x) => console.log('tracking after', x)),
   map(({ src, timeStamp }) => ({
