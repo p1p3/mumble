@@ -34,7 +34,7 @@ const tcp = require('./tcp_server.js');
     );
 
     // {timeStamp : 4572, src: { "x": 0.260, "y": 0.084, "z": 0.962, "E": 0.235 }}
-    zip([tracking$, potential$])
+    zip(tracking$, potential$)
       .pipe(sampleTime(100))
       .subscribe(([tracking, potential]) => console.log('data received ', tracking, potential));
   } catch (e) {
