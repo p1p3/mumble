@@ -21,6 +21,17 @@ exports.createTCPServer = ({ onData }) => {
       // Decode received string
       const stream = decoder.write(d);
 
+      /*
+          {
+          "timeStamp": 26,
+            "src": [
+              { "id": 0, "tag": "", "x": 0.000, "y": 0.000, "z": 0.000, "activity": 0.000 },
+              { "id": 0, "tag": "", "x": 0.000, "y": 0.000, "z": 0.000, "activity": 0.000 },
+              { "id": 0, "tag": "", "x": 0.000, "y": 0.000, "z": 0.000, "activity": 0.000 },
+              { "id": 0, "tag": "", "x": 0.000, "y": 0.000, "z": 0.000, "activity": 0.000 }
+            ]
+          }
+      */
       const receivedData = splitJson(stream);
       for (const data of receivedData) {
         try {
