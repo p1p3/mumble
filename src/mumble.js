@@ -8,6 +8,7 @@ const tcp = require('./tcp_server.js');
     // tracking, but we don't want to send any messages yet
     const tracking$ = tcp.createTCPServer({ port: mumbleConfig.tracking.port }).pipe(
       sampleTime(100),
+      tap((x) => console.log('tracking', x)),
       map((data) => data[0]),
       filter((data) => !!data),
       map(({ src, timeStamp }) => ({
@@ -17,7 +18,6 @@ const tcp = require('./tcp_server.js');
         z: src.z,
         activity: src.activity,
       })),
-      tap((x) => console.log('tracking', x)),
     );
     // const repo = await trackingRepository.create(mumbleConfig.couchDb.url);
 
@@ -25,8 +25,8 @@ const tcp = require('./tcp_server.js');
 
     const potential$ = tcp.createTCPServer({ port: mumbleConfig.potential.port }).pipe(
       sampleTime(100),
-      map((data) => data[0]),
       tap((x) => console.log('potential', x)),
+      map((data) => data[0]),
       filter((data) => !!data),
       map(({ timeStamp, src }) => ({
         timeStamp,
