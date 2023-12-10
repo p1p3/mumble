@@ -10,16 +10,14 @@ const tcp = require('./tcp_server.js');
     // const repo = await trackingRepository.create(mumbleConfig.couchDb.url);
 
     tracking$
-      .pipe(sampleTime(500))
+      .pipe(sampleTime(100))
       .subscribe((data) => console.log('data received tracking', data));
 
-    // potential
-    // const potential = tcp.createTCPServer({
-    //   onData: (data) => console.log('data received potential', data),
-    // });
-    // potential.listen(mumbleConfig.potential.port, (x) => {
-    //   console.log('server listening to %j', x, potential.address());
-    // });
+    const potential$ = await tcp.createTCPServer({ port: mumbleConfig.potential.port });
+
+    potential$
+      .pipe(sampleTime(100))
+      .subscribe((data) => console.log('data received potential', data));
   } catch (e) {
     // Deal with the fact the chain failed
   }
