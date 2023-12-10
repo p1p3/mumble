@@ -5,11 +5,8 @@ const tcp = require('./tcp_server.js');
 
 // tracking, but we don't want to send any messages yet
 const tracking$ = tcp.createTCPServer({ port: mumbleConfig.tracking.port }).pipe(
-  sampleTime(500),
-  tap((x) => console.log('tracking before', x)),
   map((data) => JSON.parse(data[0])),
   filter((data) => !!data),
-  tap((x) => console.log('tracking after', x)),
   map(({ src, timeStamp }) => ({
     timeStamp,
     mics: src.map((mic) => ({
@@ -29,11 +26,8 @@ const tracking$ = tcp.createTCPServer({ port: mumbleConfig.tracking.port }).pipe
 // {timeStamp : 4572, src: [{id: 0, tag: "", x: 0.000, y: 0.000, z: 0.000, activity: 0.000}]}
 
 const potential$ = tcp.createTCPServer({ port: mumbleConfig.potential.port }).pipe(
-  sampleTime(500),
-  tap((x) => console.log('potential after', x)),
   map((data) => JSON.parse(data[0])),
   filter((data) => !!data),
-  tap((x) => console.log('potential before', x)),
   map(({ timeStamp, src }) => ({
     timeStamp,
     mics: src.map((mic) => ({
@@ -52,7 +46,7 @@ const potential$ = tcp.createTCPServer({ port: mumbleConfig.potential.port }).pi
 // {timeStamp : 4572, src: { "x": 0.260, "y": 0.084, "z": 0.962, "E": 0.235 }}
 zip(tracking$, potential$)
   .pipe(
-    sampleTime(500),
+    sampleTime(100),
     catchError((error) => {
       console.error('error', error);
       return of([]);
