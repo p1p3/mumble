@@ -9,7 +9,7 @@ const tcp = require('./tcp_server.js');
     const tracking$ = tcp.createTCPServer({ port: mumbleConfig.tracking.port }).pipe(
       sampleTime(100),
       map((data) => data[0]),
-      filter((data) => !data),
+      filter((data) => !!data),
       map(({ src, timeStamp }) => ({
         timeStamp,
         x: src.x,
@@ -26,7 +26,8 @@ const tcp = require('./tcp_server.js');
     const potential$ = tcp.createTCPServer({ port: mumbleConfig.potential.port }).pipe(
       sampleTime(100),
       map((data) => data[0]),
-      filter((data) => !data),
+      tap((x) => console.log('potential', x)),
+      filter((data) => !!data),
       map(({ timeStamp, src }) => ({
         timeStamp,
         x: src.x,
@@ -34,7 +35,6 @@ const tcp = require('./tcp_server.js');
         z: src.z,
         error: src.E,
       })),
-      tap((x) => console.log('potential', x)),
     );
 
     // {timeStamp : 4572, src: { "x": 0.260, "y": 0.084, "z": 0.962, "E": 0.235 }}
