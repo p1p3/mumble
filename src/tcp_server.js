@@ -24,7 +24,7 @@ exports.createTCPServer = ({ port }) => {
           const decoder = new StringDecoder();
 
           const stream = decoder.write(data);
-          subscriber.next(splitJson(stream));
+          subscriber.next(JSON.parse(splitJson(stream)));
         } catch (error) {
           console.error('Error mapping data', error);
         }
