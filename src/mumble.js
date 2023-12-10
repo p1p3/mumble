@@ -15,7 +15,7 @@ const tcp = require('./tcp_server.js');
         y: src.y,
         z: src.z,
         activity: src.activity,
-      }))
+      })),
     );
     // const repo = await trackingRepository.create(mumbleConfig.couchDb.url);
 
@@ -30,7 +30,7 @@ const tcp = require('./tcp_server.js');
         y: src.y,
         z: src.z,
         error: src.E,
-      }))
+      })),
     );
 
     // {timeStamp : 4572, src: { "x": 0.260, "y": 0.084, "z": 0.962, "E": 0.235 }}
