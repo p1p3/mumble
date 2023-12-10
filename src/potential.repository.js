@@ -3,9 +3,9 @@ const nano = require('nano');
 const getPotentialTable = async (couchServerUl) => {
   const tableName = 'potential';
   const nanoServer = nano(couchServerUl);
-  const trackingTable = await nanoServer.db.get(tableName);
+  const dbs = await nanoServer.db.list();
 
-  if (!trackingTable) {
+  if (!dbs.includes(tableName)) {
     nanoServer.db.create(tableName);
   }
 
