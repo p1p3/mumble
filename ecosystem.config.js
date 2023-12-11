@@ -15,16 +15,21 @@ module.exports = {
       env_production: {
         NODE_ENV: 'production',
       },
+      max_restarts: 20,
+      restart_delay: 100,
     },
     {
       name: 'odaslive',
-      script: '~/Web/odas/build/bin/odaslive -c ~/Web/odas/config/odaslive/respeaker_4_mic_array.cfg',
+      script:
+        '~/Web/odas/build/bin/odaslive -c ~/Web/odas/config/odaslive/respeaker_4_mic_array.cfg',
       // Options reference: https://pm2.keymetrics.io/docs/usage/application-declaration/
       args: '',
       instances: 1,
       autorestart: true,
       watch: true,
       max_memory_restart: '512M',
+      max_restarts: 20,
+      restart_delay: 5000,
     },
   ],
 
