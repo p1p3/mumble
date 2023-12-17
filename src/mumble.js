@@ -15,6 +15,8 @@ const tcp = require('./tcp_server.js');
 const trackingRepository = require('./tracking.repository.js');
 const potentialRepository = require('./potential.repository.js');
 
+console.log('Starting mumble');
+
 const startTime = Date.now();
 // tracking, but we don't want to send any messages yet
 
@@ -41,7 +43,6 @@ const tracking$ = tcp.createTCPServer({ port: mumbleConfig.tracking.port }).pipe
 
 combineLatest([trackingRepo$, tracking$])
   .pipe(
-    // sampleTime(100),
     switchMap(([trackingRepo, tracking]) => from(trackingRepo.add(tracking, tracking.timeStamp))),
     catchError((error) => {
       console.error('error storing tracking', error);
@@ -76,7 +77,6 @@ const potential$ = tcp.createTCPServer({ port: mumbleConfig.potential.port }).pi
 
 combineLatest([potentialRepo$, potential$])
   .pipe(
-    // sampleTime(100),
     switchMap(([potentialRepo, potential]) =>
       from(potentialRepo.add(potential, potential.timeStamp))
     ),
@@ -96,4 +96,4 @@ zip(tracking$, potential$)
       return of([]);
     })
   )
-  .subscribe(([tracking, potential]) => console.log('data received ', tracking, potential));
+  .subscribe(() => console.log('data received'));
