@@ -6,8 +6,8 @@ module.exports = {
       // Options reference: https://pm2.keymetrics.io/docs/usage/application-declaration/
       args: '',
       instances: 1,
-      autorestart: false,
-      watch: true,
+      autorestart: true,
+      watch: false,
       max_memory_restart: '256M',
       env: {
         NODE_ENV: 'development',
@@ -15,7 +15,7 @@ module.exports = {
       env_production: {
         NODE_ENV: 'production',
       },
-      max_restarts: 20,
+      max_restarts: 5,
       restart_delay: 100,
     },
     {
@@ -26,9 +26,9 @@ module.exports = {
       args: '',
       instances: 1,
       autorestart: true,
-      watch: true,
+      watch: false,
       max_memory_restart: '512M',
-      max_restarts: 20,
+      max_restarts: 5,
       restart_delay: 5000,
     },
   ],
