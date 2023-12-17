@@ -38,7 +38,7 @@ const tracking$ = tcp.createTCPServer({ port: mumbleConfig.tracking.port }).pipe
     console.error('error tracking', error);
     return of({});
   }),
-  shareReplay(1)
+  shareReplay({ refCount: true, bufferSize: 1 })
 );
 
 combineLatest([trackingRepo$, tracking$])
@@ -50,7 +50,6 @@ combineLatest([trackingRepo$, tracking$])
     })
   )
   .subscribe();
-// const repo = await trackingRepository.create(mumbleConfig.couchDb.url);
 
 // {timeStamp : 4572, src: [{id: 0, tag: "", x: 0.000, y: 0.000, z: 0.000, activity: 0.000}]}
 
@@ -77,9 +76,7 @@ const potential$ = tcp.createTCPServer({ port: mumbleConfig.potential.port }).pi
 
 combineLatest([potentialRepo$, potential$])
   .pipe(
-    switchMap(([potentialRepo, potential]) =>
-      from(potentialRepo.add(potential, potential.timeStamp))
-    ),
+    switchMap(([potentialRepo, potential]) => from(potentialRepo.add(potential, potential.timeStamp))),
     catchError((error) => {
       console.error('error storing potential', error);
       return of({});
@@ -90,10 +87,10 @@ combineLatest([potentialRepo$, potential$])
 // {timeStamp : 4572, src: { "x": 0.260, "y": 0.084, "z": 0.962, "E": 0.235 }}
 zip(tracking$, potential$)
   .pipe(
-    sampleTime(5000),
+    sampleTime(3600000),
     catchError((error) => {
       console.error('error', error);
       return of([]);
     })
   )
-  .subscribe(() => console.log('data received'));
+  .subscribe(() => console.info('Beat'));

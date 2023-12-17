@@ -26,8 +26,6 @@ exports.createTCPServer = ({ port }) => {
           const stream = decoder.write(data);
           subscriber.next(splitJson(stream));
           conn.end();
-          conn.destroy();
-          conn.unref();
         } catch (error) {
           console.error('Error mapping data', error);
         }
